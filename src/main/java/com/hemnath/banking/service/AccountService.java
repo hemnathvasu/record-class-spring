@@ -3,6 +3,7 @@ package com.hemnath.banking.service;
 import com.hemnath.banking.dto.AccountDto;
 import com.hemnath.banking.dto.AccountMapper;
 import com.hemnath.banking.entity.Account;
+import com.hemnath.banking.globalexception.AccountNotFoundException;
 import com.hemnath.banking.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,14 +24,14 @@ public class AccountService {
 
     public AccountDto getById(Long id){
         Account account = accountRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Account Not found :"+id));
+                .orElseThrow(()->new AccountNotFoundException("Account Not found :"+id));
 
         return AccountMapper.accountToDto(account);
     }
 
     public AccountDto addDeposit(Long id, double amount){
         Account account = accountRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Account Not found :"+id));
+                .orElseThrow(()->new AccountNotFoundException("Account Not found :"+id));
 
         double total = account.getBalance()+amount;
         account.setBalance(total);
@@ -50,7 +51,7 @@ public class AccountService {
 
     public AccountDto withDrawAmount(Long id, double amount){
         Account account = accountRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Account Not found :"+id));
+                .orElseThrow(()->new AccountNotFoundException("Account Not found :"+id));
 
         if(amount > account.getBalance()){
             throw new RuntimeException("Insufficient balance");
@@ -64,7 +65,7 @@ public class AccountService {
 
     public String deleteById(Long id){
         Account account = accountRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Account Not found :"+id));
+                .orElseThrow(()->new AccountNotFoundException("Account Not found :"+id));
 
         accountRepository.deleteById(id);
         return "Delete an account "+ id;
